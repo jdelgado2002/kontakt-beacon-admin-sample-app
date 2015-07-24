@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import com.kontakt.sample.R;
 import com.kontakt.sample.ui.activity.BaseActivity;
-import com.kontakt.sdk.android.common.model.ConfigIBeacon;
+import com.kontakt.sdk.android.common.model.IBeaconConfig;
 import com.kontakt.sdk.android.common.model.IBeaconIConfig;
 
 import java.util.UUID;
@@ -78,8 +78,8 @@ public class ConfigFormActivity extends BaseActivity {
         finish();
     }
 
-    private ConfigIBeacon createConfig() {
-        return new ConfigIBeacon.Builder()
+    private IBeaconConfig createConfig() {
+        return new IBeaconConfig.Builder()
                      .setProximityUUID(UUID.fromString(proximityUUIDText.getText().toString().trim()))
                      .setMajor(Integer.parseInt(majorText.getText().toString()))
                      .setMinor(Integer.parseInt(minorText.getText().toString()))
