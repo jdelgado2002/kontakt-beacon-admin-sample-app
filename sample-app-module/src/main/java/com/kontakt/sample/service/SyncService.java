@@ -50,7 +50,7 @@ public class SyncService extends IntentService {
 
     private void applyConfig(IConfig config) {
         try {
-            final int httpStatus = kontaktApiClient.applyIBeaconConfig(config);
+            final int httpStatus = kontaktApiClient.applyConfig(config);
         } catch (ClientException e) {
             e.printStackTrace();
         }

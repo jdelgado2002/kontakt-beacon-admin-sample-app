@@ -2,7 +2,7 @@ package com.kontakt.sample.loader;
 
 import android.content.Context;
 
-import com.kontakt.sdk.android.common.model.IProfile;
+import com.kontakt.sdk.android.common.model.IPreset;
 import com.kontakt.sdk.android.http.HttpResult;
 import com.kontakt.sdk.android.http.KontaktApiClient;
 import com.kontakt.sdk.android.http.exception.ClientException;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class ProfilesLoader extends AbstractLoader<List<IProfile>> {
+public class ProfilesLoader extends AbstractLoader<List<IPreset>> {
 
     private final DisableableContentObserver observer;
 
@@ -45,10 +45,10 @@ public class ProfilesLoader extends AbstractLoader<List<IProfile>> {
     }
 
     @Override
-    public List<IProfile> loadInBackground() {
+    public List<IPreset> loadInBackground() {
         try {
-            HttpResult<List<IProfile>> profilesResult = profilesApi.listProfiles();
-            return profilesResult.isPresent() ? profilesResult.get() : Collections.<IProfile>emptyList();
+            HttpResult<List<IPreset>> profilesResult = profilesApi.listPresets();
+            return profilesResult.isPresent() ? profilesResult.get() : Collections.<IPreset>emptyList();
         } catch (ClientException e) {
             e.printStackTrace();
             return Collections.emptyList();

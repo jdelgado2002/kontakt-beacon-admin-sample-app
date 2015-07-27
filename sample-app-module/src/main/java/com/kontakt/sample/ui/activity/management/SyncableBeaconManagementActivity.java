@@ -23,7 +23,7 @@ import com.kontakt.sdk.android.ble.connection.ibeacon.IBeaconConnection;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
 import com.kontakt.sdk.android.common.model.BeaconConfig;
-import com.kontakt.sdk.android.common.model.Profile;
+import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
 import com.kontakt.sdk.android.connection.SyncableIBeaconConnection;
@@ -262,7 +262,7 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
 
     private void onProfileResultDelivered(final int resultCode, final Intent data) {
         if (resultCode != RESULT_CANCELED) {
-            final Profile profile = data.getParcelableExtra(ProfilesActivity.EXTRA_PROFILE);
+            final Preset profile = data.getParcelableExtra(ProfilesActivity.EXTRA_PROFILE);
             onAcceptProfile(profile);
         }
     }
@@ -534,7 +534,7 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
         });
     }
 
-    private void onAcceptProfile(final Profile profile) {
+    private void onAcceptProfile(final Preset profile) {
         //todo: accept profile
     }
 

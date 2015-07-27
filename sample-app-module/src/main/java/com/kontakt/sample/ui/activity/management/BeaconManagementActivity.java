@@ -25,7 +25,7 @@ import com.kontakt.sdk.android.ble.connection.ibeacon.IBeaconConnection;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
 import com.kontakt.sdk.android.common.model.BeaconConfig;
-import com.kontakt.sdk.android.common.model.Profile;
+import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
 
@@ -261,7 +261,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
 
     private void onProfileResultDelivered(final int resultCode, final Intent data) {
         if(resultCode != RESULT_CANCELED) {
-            final Profile profile = data.getParcelableExtra(ProfilesActivity.EXTRA_PROFILE);
+            final Preset profile = data.getParcelableExtra(ProfilesActivity.EXTRA_PROFILE);
             onAcceptProfile(profile);
         }
     }
@@ -556,17 +556,17 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         });
     }
 
-    private void onAcceptProfile(final Profile profile) {
-        beaconConnection.acceptProfile(profile, new IBeaconConnection.WriteBatchListener<Profile>() {
+    private void onAcceptProfile(final Preset profile) {
+        beaconConnection.acceptProfile(profile, new IBeaconConnection.WriteBatchListener<Preset>() {
             @Override
-            public void onWriteBatchStart(Profile batchHolder) {
+            public void onWriteBatchStart(Preset batchHolder) {
                 progressDialog = ProgressDialog.show(BeaconManagementActivity.this,
                         String.format("Accepting profile - %s", profile.getName()),
                         "Please wait...");
             }
 
             @Override
-            public void onWriteBatchFinish(Profile batchHolder) {
+            public void onWriteBatchFinish(Preset batchHolder) {
                 progressDialog.dismiss();
             }
 
@@ -597,7 +597,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Utils.showToast(BeaconManagementActivity.this, "Profile writing failed");
+                        Utils.showToast(BeaconManagementActivity.this, "Preset writing failed");
                     }
                 });
             }
