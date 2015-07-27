@@ -47,7 +47,7 @@ public class ProfilesLoader extends AbstractLoader<List<IPreset>> {
     @Override
     public List<IPreset> loadInBackground() {
         try {
-            HttpResult<List<IPreset>> profilesResult = profilesApi.listPresets();
+            HttpResult<List<IPreset>> profilesResult = profilesApi.getPresets();
             return profilesResult.isPresent() ? profilesResult.get() : Collections.<IPreset>emptyList();
         } catch (ClientException e) {
             e.printStackTrace();
