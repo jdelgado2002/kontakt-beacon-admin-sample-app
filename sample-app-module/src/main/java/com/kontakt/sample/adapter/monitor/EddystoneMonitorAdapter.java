@@ -49,6 +49,9 @@ public class EddystoneMonitorAdapter extends BaseMonitorAdapter<IEddystoneNamesp
         viewHolder.pduCount.setText(context.getString(R.string.pdu_count, eddystoneDevice.getPduCount()));
         viewHolder.timeSincePowerUp.setText(context.getString(R.string.time_since_power_up, eddystoneDevice.getTimeSincePowerUp()));
         viewHolder.telemetryVersion.setText(context.getString(R.string.telemetry_version, eddystoneDevice.getTelemetryVersion()));
+        viewHolder.telemetryVersion.setText(context.getString(R.string.telemetry_version, eddystoneDevice.getTelemetryVersion()));
+        viewHolder.uniqueId.setText(context.getString(R.string.format_unique_id, eddystoneDevice.getUniqueId()));
+        viewHolder.firmwareVersion.setText(context.getString(R.string.format_firmware_version, eddystoneDevice.getFirmwareVersion()));
 
         return convertView;
     }
