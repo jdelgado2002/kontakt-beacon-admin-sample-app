@@ -10,7 +10,7 @@ import android.widget.ListView;
 import com.kontakt.sample.R;
 import com.kontakt.sample.adapter.ProfilesAdapter;
 import com.kontakt.sample.loader.ProfilesLoader;
-import com.kontakt.sdk.android.common.model.IProfile;
+import com.kontakt.sdk.android.common.model.IPreset;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
 
-public class ProfilesActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<IProfile>> {
+public class ProfilesActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<IPreset>> {
 
     public static final String EXTRA_PROFILE = "extra_profile";
 
@@ -60,7 +60,7 @@ public class ProfilesActivity extends BaseActivity implements LoaderManager.Load
 
     @OnItemClick(R.id.profiles_list)
     void onListItemClick(final int position) {
-        final IProfile profile = profilesAdapter.getItem(position);
+        final IPreset profile = profilesAdapter.getItem(position);
         final Intent resultIntent = new Intent();
         resultIntent.putExtra(EXTRA_PROFILE, profile);
         setResult(RESULT_OK, resultIntent);
@@ -68,18 +68,18 @@ public class ProfilesActivity extends BaseActivity implements LoaderManager.Load
     }
 
     @Override
-    public Loader<List<IProfile>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<IPreset>> onCreateLoader(int id, Bundle args) {
         return new ProfilesLoader(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<IProfile>> loader, List<IProfile> data) {
+    public void onLoadFinished(Loader<List<IPreset>> loader, List<IPreset> data) {
         profilesAdapter.replaceWith(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<IProfile>> loader) {
-        profilesAdapter.replaceWith(Collections.<IProfile>emptyList());
+    public void onLoaderReset(Loader<List<IPreset>> loader) {
+        profilesAdapter.replaceWith(Collections.<IPreset>emptyList());
     }
 
     private void setListAdapter(ProfilesAdapter profilesAdapter) {

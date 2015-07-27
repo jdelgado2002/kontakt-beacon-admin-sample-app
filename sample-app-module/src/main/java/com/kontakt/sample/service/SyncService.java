@@ -3,8 +3,8 @@ package com.kontakt.sample.service;
 import android.app.IntentService;
 import android.content.Intent;
 
+import com.kontakt.sdk.android.common.model.IConfig;
 import com.kontakt.sdk.android.common.util.SDKPreconditions;
-import com.kontakt.sdk.android.common.model.Config;
 import com.kontakt.sdk.android.http.KontaktApiClient;
 import com.kontakt.sdk.android.http.exception.ClientException;
 
@@ -38,7 +38,7 @@ public class SyncService extends IntentService {
 
         switch (request) {
             case REQUEST_SYNC_CONFIG:
-                Config config = intent.getParcelableExtra(EXTRA_ITEM);
+                IConfig config = intent.getParcelableExtra(EXTRA_ITEM);
                 SDKPreconditions.checkNotNull(config, "Config is null");
                 applyConfig(config);
                 break;
@@ -48,7 +48,7 @@ public class SyncService extends IntentService {
         }
     }
 
-    private void applyConfig(Config config) {
+    private void applyConfig(IConfig config) {
         try {
             final int httpStatus = kontaktApiClient.applyConfig(config);
         } catch (ClientException e) {
