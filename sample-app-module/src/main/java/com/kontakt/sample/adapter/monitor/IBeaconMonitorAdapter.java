@@ -66,9 +66,9 @@ public class IBeaconMonitorAdapter extends BaseMonitorAdapter<IBeaconRegion, IBe
         childViewHolder.rssiTextView.setText(String.format("Rssi: %f", device.getRssi()));
         childViewHolder.txPowerTextView.setText(String.format("Tx Power: %d", device.getTxPower()));
         childViewHolder.beaconUniqueIdTextView.setText(String.format("Beacon Unique Id: %s", device.getUniqueId()));
-        childViewHolder.firmwareVersionTextView.setText(String.format("Firmware version: %d", device.getFirmwareVersion()));
         childViewHolder.proximityTextView.setText(String.format("Proximity: %s", device.getProximity()));
 
+        childViewHolder.firmwareVersionTextView.setText(context.getString(R.string.format_firmware_version, device.getFirmwareVersion()));
         return convertView;
     }
 

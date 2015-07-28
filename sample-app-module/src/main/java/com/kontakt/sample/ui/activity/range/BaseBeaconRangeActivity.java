@@ -57,7 +57,6 @@ public abstract class BaseBeaconRangeActivity extends BaseActivity implements Pr
 
     abstract BaseRangeAdapter getAdapter();
 
-
     private static final int REQUEST_CODE_ENABLE_BLUETOOTH = 1;
 
     protected static final int REQUEST_CODE_CONNECT_TO_DEVICE = 2;
@@ -94,7 +93,6 @@ public abstract class BaseBeaconRangeActivity extends BaseActivity implements Pr
             .setEventTypes(eventTypes) //only specified events we be called on callback
             .setDevicesUpdateCallbackInterval(TimeUnit.SECONDS.toMillis(2)) //how often DEVICES_UPDATE will be called
             .setRssiCalculator(RssiCalculators.newLimitedMeanRssiCalculator(5))
-            .setIBeaconFilters(Collections.singleton(IBeaconFilters.newDeviceNameFilter("gangalbani")))
             .build();
 
     protected EddystoneScanContext eddystoneScanContext = new EddystoneScanContext.Builder()
