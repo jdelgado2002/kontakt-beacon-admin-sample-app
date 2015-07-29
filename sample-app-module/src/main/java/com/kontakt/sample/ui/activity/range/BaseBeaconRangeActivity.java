@@ -28,14 +28,18 @@ import com.kontakt.sdk.android.ble.discovery.BluetoothDeviceEvent;
 import com.kontakt.sdk.android.ble.discovery.EventType;
 import com.kontakt.sdk.android.ble.discovery.eddystone.EddystoneDeviceEvent;
 import com.kontakt.sdk.android.ble.discovery.eddystone.EddystoneURLAdvertisingPacket;
+import com.kontakt.sdk.android.ble.discovery.ibeacon.IBeaconAdvertisingPacket;
 import com.kontakt.sdk.android.ble.discovery.ibeacon.IBeaconDeviceEvent;
 import com.kontakt.sdk.android.ble.filter.eddystone.URLFilter;
+import com.kontakt.sdk.android.ble.filter.ibeacon.IBeaconFilter;
+import com.kontakt.sdk.android.ble.filter.ibeacon.IBeaconFilters;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 import com.kontakt.sdk.android.ble.rssi.RssiCalculators;
 import com.kontakt.sdk.android.ble.util.BluetoothUtils;
 import com.kontakt.sdk.android.common.profile.DeviceProfile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +56,6 @@ public abstract class BaseBeaconRangeActivity extends BaseActivity implements Pr
     abstract IBeaconScanContext getIBeaconScanContext();
 
     abstract BaseRangeAdapter getAdapter();
-
 
     private static final int REQUEST_CODE_ENABLE_BLUETOOTH = 1;
 

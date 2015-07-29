@@ -5,10 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ArrayAdapter;
 
 import com.kontakt.sample.R;
 import com.kontakt.sample.dialog.ChoiceDialogFragment;
@@ -19,9 +20,11 @@ import com.kontakt.sample.ui.activity.BaseActivity;
 import com.kontakt.sample.ui.view.Entry;
 import com.kontakt.sample.util.Constants;
 import com.kontakt.sample.util.Utils;
-import com.kontakt.sdk.android.ble.connection.eddystone.EddystoneBeaconConnection;
+import com.kontakt.sdk.android.ble.connection.EddystoneConnection;
+import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
+import com.kontakt.sdk.android.common.profile.DeviceProfile;
 import com.kontakt.sdk.android.common.profile.IEddystoneDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
 
@@ -29,7 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class EddystoneManagementActivity extends BaseActivity implements EddystoneBeaconConnection.ConnectionListener {
+public class EddystoneManagementActivity extends BaseActivity implements EddystoneConnection.ConnectionListener {
 
     public static final String EXTRA_FAILURE_MESSAGE = "extra_failure_message";
 
@@ -58,9 +61,10 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
     Entry firmwareRevision;
     @InjectView(R.id.hardware_revision)
     Entry hardwareRevision;
+    @InjectView(R.id.switch_profile)
+    Entry switchProfile;
 
-    private EddystoneBeaconConnection eddystoneBeaconConnection;
-    private IEddystoneDevice eddystoneDevice;
+    private EddystoneConnection eddystoneConnection;
 
     private int animationDuration;
 
@@ -100,22 +104,22 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
     }
 
     private void getEddystone() {
-        eddystoneDevice = getIntent().getParcelableExtra(EDDYSTONE_DEVICE);
-        eddystoneBeaconConnection = new EddystoneBeaconConnection(this, eddystoneDevice, this);
+        IEddystoneDevice eddystoneDevice = getIntent().getParcelableExtra(EDDYSTONE_DEVICE);
+        eddystoneConnection = new EddystoneConnection(this, eddystoneDevice, this);
         setUpActionBarTitle(String.format("%s (%s)", eddystoneDevice.getUrl(), eddystoneDevice.getAddress()));
     }
 
 
     private void connect() {
-        if (eddystoneBeaconConnection != null && !eddystoneBeaconConnection.isConnected()) {
-            eddystoneBeaconConnection.connect();
+        if (eddystoneConnection != null && !eddystoneConnection.isConnected()) {
+            eddystoneConnection.connect();
         }
     }
 
     private void clearConnection() {
-        if (eddystoneBeaconConnection != null && eddystoneBeaconConnection.isConnected()) {
-            eddystoneBeaconConnection.close();
-            eddystoneBeaconConnection = null;
+        if (eddystoneConnection != null && eddystoneConnection.isConnected()) {
+            eddystoneConnection.close();
+            eddystoneConnection = null;
         }
     }
 
@@ -123,6 +127,17 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
     public void onBackPressed() {
         setResult(RESULT_OK);
         super.onBackPressed();
+    }
+
+    @OnClick(R.id.switch_profile)
+    void switchDeviceProfile() {
+        showProfilesPicker(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DeviceProfile deviceProfile = DeviceProfile.valueOf(SUPPORTED_SWITCHABLE_PROFILES[which]);
+                onSwitchDeviceProfile(deviceProfile);
+            }
+        });
     }
 
     @OnClick(R.id.url)
@@ -151,15 +166,19 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
     }
 
     private void onResetDevice() {
-        eddystoneBeaconConnection.resetDevice(new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.resetDevice(new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Reset device success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Reset device failure");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Reset device failure");
+                } else {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
@@ -241,87 +260,145 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
         ).show(getFragmentManager().beginTransaction(), Constants.DIALOG);
     }
 
+    private void onSwitchDeviceProfile(final DeviceProfile deviceProfile) {
+        eddystoneConnection.switchToDeviceProfile(deviceProfile, new WriteListener() {
+            @Override
+            public void onWriteSuccess() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        switchProfile.setValue(getString(R.string.format_active_profile, deviceProfile.name()));
+                    }
+                });
+            }
+
+            @Override
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Could not switch to profile");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
+            }
+        });
+    }
+
     private void onOverwritePassword(String result) {
-        eddystoneBeaconConnection.overwritePassword(result, new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.overwritePassword(result, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("New password set");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("New password set failed");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("New password set failed");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
 
     private void onRestoreDefaultSettings(String masterPassword) {
-        eddystoneBeaconConnection.restoreDefaultSettings(masterPassword, new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.restoreDefaultSettings(masterPassword, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Restore default settings success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Restore default settings failed");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Restore default settings failed");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
 
+    private void showProfilesPicker(final DialogInterface.OnClickListener onClickListener) {
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                SUPPORTED_SWITCHABLE_PROFILES);
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.pick_profile))
+                .setAdapter(adapter, onClickListener)
+                .create()
+                .show();
+    }
 
     private void onOverwriteInstanceId(String result) {
-        eddystoneBeaconConnection.overwriteInstanceId(result, new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.overwriteInstanceId(result, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Overwrite instance id success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Overwrite instance id failure");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Overwrite instance id failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
 
     private void onOverwriteNamespaceId(String result) {
-        eddystoneBeaconConnection.overwriteNamespaceId(result, new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.overwriteNamespaceId(result, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Overwrite namespace id success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Overwrite namespace id failure");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Overwrite namespace id failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
 
     private void onOverwritePowerLevel(int i) {
-        eddystoneBeaconConnection.overwritePowerLevel(i, new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.overwritePowerLevel(i, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Overwrite power level success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Overwrite power level failure");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Overwrite power level failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
 
     private void onOverwriteUrl(String result) {
-        eddystoneBeaconConnection.overwriteUrl(result, new EddystoneBeaconConnection.WriteListener() {
+        eddystoneConnection.overwriteUrl(result, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Overwrite url success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Overwrite url failure");
+            public void onWriteFailure(final Cause cause) {
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Overwrite url failure");
+                }  else if(cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, eddystoneConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
@@ -346,10 +423,10 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
             public void run() {
                 final Intent intent = getIntent();
                 switch (failureCode) {
-                    case EddystoneBeaconConnection.FAILURE_UNKNOWN_BEACON:
-                        intent.putExtra(EXTRA_FAILURE_MESSAGE, String.format("Unknown beacon: %s", eddystoneDevice.getAddress()));
+                    case EddystoneConnection.FAILURE_UNKNOWN_BEACON:
+                        intent.putExtra(EXTRA_FAILURE_MESSAGE, String.format("Unknown beacon: %s", eddystoneConnection.getDevice().getAddress()));
                         break;
-                    case EddystoneBeaconConnection.FAILURE_WRONG_PASSWORD:
+                    case EddystoneConnection.FAILURE_WRONG_PASSWORD:
                         intent.putExtra(EXTRA_FAILURE_MESSAGE, "Wrong password. Beacon will be disabled for about 20 mins.");
                         break;
                     default:
@@ -370,15 +447,15 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
     @Override
     public void onErrorOccured(int errorCode) {
         switch (errorCode) {
-            case EddystoneBeaconConnection.ERROR_OVERWRITE_REQUEST:
+            case EddystoneConnection.ERROR_OVERWRITE_REQUEST:
                 showToast("Overwrite request error");
                 break;
 
-            case EddystoneBeaconConnection.ERROR_SERVICES_DISCOVERY:
+            case EddystoneConnection.ERROR_SERVICES_DISCOVERY:
                 showToast("Services discovery error");
                 break;
 
-            case EddystoneBeaconConnection.ERROR_AUTHENTICATION:
+            case EddystoneConnection.ERROR_AUTHENTICATION:
                 showToast("Authentication error");
                 break;
 
@@ -397,7 +474,7 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(EddystoneManagementActivity.this, message, Toast.LENGTH_SHORT).show();
+                Utils.showToast(EddystoneManagementActivity.this, message);
             }
         });
     }
@@ -420,6 +497,9 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
         manufacturerName.setValue(characteristics.getManufacturerName());
         firmwareRevision.setValue(characteristics.getFirmwareRevision());
         hardwareRevision.setValue(characteristics.getHardwareRevision());
+
+        DeviceProfile deviceProfile = characteristics.getActiveProfile();
+        switchProfile.setValue(deviceProfile != null ? deviceProfile.name() : null);
     }
 
 

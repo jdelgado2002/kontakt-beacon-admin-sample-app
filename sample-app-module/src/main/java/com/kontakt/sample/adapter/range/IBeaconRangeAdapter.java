@@ -49,7 +49,7 @@ public class IBeaconRangeAdapter extends BaseRangeAdapter<IBeaconDevice> {
         viewHolder.rssiTextView.setText(String.format("Rssi : %f", beacon.getRssi()));
         viewHolder.txPowerTextView.setText(String.format("Tx Power : %d", beacon.getTxPower()));
         viewHolder.proximityTextView.setText(String.format("Proximity: %s", beacon.getProximity().name()));
-        viewHolder.firmwareVersionTextView.setText(String.format("Firmware: %d", beacon.getFirmwareVersion()));
+        viewHolder.firmwareVersionTextView.setText(String.format("Firmware: %s", beacon.getFirmwareVersion()));
         viewHolder.beaconUniqueIdTextView.setText(String.format("Beacon Unique Id: %s", beacon.getUniqueId()));
         viewHolder.proximityUUIDTextView.setText(String.format("Proximity UUID: %s", beacon.getProximityUUID().toString()));
 

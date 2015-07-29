@@ -42,7 +42,7 @@
     <string name="pending_configs">Pending configurations</string>
     <string name="apply_config">Apply Configuration</string>
     <string name="generate">Generate</string>
-    <string name="beacon_unique_id">Beacon Unique Id</string>
+    <string name="unique_id">Unique Id</string>
     <string name="submit">Submit</string>
     <string name="device_name">Device Name</string>
     <string name="rssi">Rssi</string>
@@ -73,9 +73,12 @@
     <string name="distance_filter">Distance &lt; %1$d</string>
     <string name="remove_manager">Remove manager</string>
     <string name="syncable_connection">Syncable connection</string>
-
+    <string name="range_all_beacons">Range all types</string>
+    <string name="active_profiles">Active Profiles</string>
+    <string name="switch_active_profile">Switch active profile</string>
     <string name="enable_bluetooth">Enable bluetooth</string>
     <string name="disable_bluetooth">Disable bluetooth</string>
+
     <string name="namespace">Namespace: %1$s</string>
     <string name="instance">Instance: %1$s</string>
     <string name="url">Url: %1$s</string>
@@ -85,5 +88,9 @@
     <string name="time_since_power_up">Time since power up: %1$d seconds</string>
     <string name="telemetry_version">Telemetry version: %1$d</string>
     <string name="tx_power_level">Power: %1$d dBm</string>
-    <string name="range_all_beacons">Range all types</string>
+    <string name="format_unique_id">Unique Id: %1$s</string>
+    <string name="format_firmware_version">Firmware version: %1$s</string>
+    <string name="format_feature_not_supported_in_firmware">Feature not supported in firmware %1$s</string>
+    <string name="pick_profile">Pick profile</string>
+    <string name="format_active_profile">Active Profile: %1$s</string>
 </resources>

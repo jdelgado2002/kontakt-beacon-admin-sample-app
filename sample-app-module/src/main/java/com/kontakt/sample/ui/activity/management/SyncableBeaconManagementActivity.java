@@ -19,10 +19,12 @@ import com.kontakt.sample.ui.activity.ProfilesActivity;
 import com.kontakt.sample.ui.view.Entry;
 import com.kontakt.sample.util.Constants;
 import com.kontakt.sample.util.Utils;
-import com.kontakt.sdk.android.ble.connection.ibeacon.IBeaconConnection;
+import com.kontakt.sdk.android.ble.connection.IBeaconConnection;
+import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
 import com.kontakt.sdk.android.common.model.Config;
+import com.kontakt.sdk.android.common.model.IConfig;
 import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
@@ -504,10 +506,10 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
         startActivityForResult(new Intent(this, ConfigFormActivity.class), REQUEST_CODE_OBTAIN_CONFIG);
     }
 
-    private void onApplyConfig(final Config config) {
-        syncableIBeaconConnection.applyConfig(config, new SyncableIBeaconConnection.SyncWriteBatchListener<Config>() {
+    private void onApplyConfig(final IConfig config) {
+        syncableIBeaconConnection.applyConfig(config, new SyncableIBeaconConnection.SyncWriteBatchListener<IConfig>() {
             @Override
-            public void onSyncWriteBatchStart(Config batchHolder) {
+            public void onSyncWriteBatchStart(IConfig batchHolder) {
                 showToast("write config batch start");
             }
 
@@ -528,7 +530,7 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
             }
 
             @Override
-            public void onSuccess(Config batchHolder) {
+            public void onSuccess(IConfig batchHolder) {
                 showToast("config write and sync succeed");
             }
         });
@@ -543,16 +545,21 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
     }
 
     private void onResetDevice() {
-        syncableIBeaconConnection.resetDevice(new IBeaconConnection.WriteListener() {
+        syncableIBeaconConnection.resetDevice(new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Device reset success");
             }
 
             @Override
-            public void onWriteFailure() {
-                showToast("Device reset failure");
+            public void onWriteFailure(Cause cause) {
+                if(cause == Cause.GATT_FAILURE) {
+                    showToast("Device reset failure");
+                } else if( cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, syncableIBeaconConnection.getDevice().getFirmwareVersion()));
+                }
             }
+
         });
     }
 

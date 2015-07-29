@@ -27,6 +27,10 @@ public class EddystoneItemViewHolder {
     public TextView timeSincePowerUp;
     @InjectView(R.id.telemetry_version)
     public TextView telemetryVersion;
+    @InjectView(R.id.unique_id)
+    public TextView uniqueId;
+    @InjectView(R.id.firmware_version)
+    public TextView firmwareVersion;
 
     public EddystoneItemViewHolder(View rootView) {
         ButterKnife.inject(this, rootView);

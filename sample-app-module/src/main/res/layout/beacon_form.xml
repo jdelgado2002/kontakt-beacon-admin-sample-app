@@ -147,6 +147,17 @@
             android:layout_height="wrap_content"
             app:key="@string/restore_default_settings"/>
 
+        <com.kontakt.sample.ui.view.Header
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:header_title="@string/active_profiles"/>
+
+        <com.kontakt.sample.ui.view.Entry
+            android:id="@+id/switch_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:key="@string/switch_active_profile"/>
+
     </LinearLayout>
 
 </ScrollView>
