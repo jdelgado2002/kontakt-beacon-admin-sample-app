@@ -28,6 +28,8 @@ import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
 import com.kontakt.sdk.android.common.model.Config;
+import com.kontakt.sdk.android.common.model.IConfig;
+import com.kontakt.sdk.android.common.model.IPreset;
 import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.DeviceProfile;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
@@ -522,17 +524,17 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         startActivityForResult(new Intent(this, ConfigFormActivity.class), REQUEST_CODE_OBTAIN_CONFIG);
     }
 
-    private void onApplyConfig(final Config config) {
-        beaconConnection.applyConfig(config, new IBeaconConnection.WriteBatchListener<Config>() {
+    private void onApplyConfig(final IConfig config) {
+        beaconConnection.applyConfig(config, new IBeaconConnection.WriteBatchListener<IConfig>() {
             @Override
-            public void onWriteBatchStart(Config batchHolder) {
+            public void onWriteBatchStart(IConfig  batchHolder) {
                 progressDialog = ProgressDialog.show(BeaconManagementActivity.this,
                         "Applying Config",
                         "Please wait...");
             }
 
             @Override
-            public void onWriteBatchFinish(final Config batch) {
+            public void onWriteBatchFinish(final IConfig  batch) {
                 progressDialog.dismiss();
                 final Intent serviceIntent = new Intent(BeaconManagementActivity.this, SyncService.class);
                 serviceIntent.putExtra(SyncService.EXTRA_REQUEST_CODE, SyncService.REQUEST_SYNC_CONFIG);
@@ -577,17 +579,17 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         });
     }
 
-    private void onAcceptProfile(final Preset profile) {
-        beaconConnection.acceptProfile(profile, new IBeaconConnection.WriteBatchListener<Preset>() {
+    private void onAcceptProfile(final IPreset profile) {
+        beaconConnection.acceptProfile(profile, new IBeaconConnection.WriteBatchListener<IPreset>() {
             @Override
-            public void onWriteBatchStart(Preset batchHolder) {
+            public void onWriteBatchStart(IPreset batchHolder) {
                 progressDialog = ProgressDialog.show(BeaconManagementActivity.this,
                         String.format("Accepting profile - %s", profile.getName()),
                         "Please wait...");
             }
 
             @Override
-            public void onWriteBatchFinish(Preset batchHolder) {
+            public void onWriteBatchFinish(IPreset batchHolder) {
                 progressDialog.dismiss();
             }
 

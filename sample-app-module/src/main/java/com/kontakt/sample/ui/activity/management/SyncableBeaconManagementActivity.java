@@ -24,6 +24,7 @@ import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
 import com.kontakt.sdk.android.common.model.Config;
+import com.kontakt.sdk.android.common.model.IConfig;
 import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
@@ -505,10 +506,10 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
         startActivityForResult(new Intent(this, ConfigFormActivity.class), REQUEST_CODE_OBTAIN_CONFIG);
     }
 
-    private void onApplyConfig(final Config config) {
-        syncableIBeaconConnection.applyConfig(config, new SyncableIBeaconConnection.SyncWriteBatchListener<Config>() {
+    private void onApplyConfig(final IConfig config) {
+        syncableIBeaconConnection.applyConfig(config, new SyncableIBeaconConnection.SyncWriteBatchListener<IConfig>() {
             @Override
-            public void onSyncWriteBatchStart(Config batchHolder) {
+            public void onSyncWriteBatchStart(IConfig batchHolder) {
                 showToast("write config batch start");
             }
 
@@ -529,7 +530,7 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
             }
 
             @Override
-            public void onSuccess(Config batchHolder) {
+            public void onSuccess(IConfig batchHolder) {
                 showToast("config write and sync succeed");
             }
         });
