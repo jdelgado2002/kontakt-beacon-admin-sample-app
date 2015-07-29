@@ -527,14 +527,14 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
     private void onApplyConfig(final IConfig config) {
         beaconConnection.applyConfig(config, new IBeaconConnection.WriteBatchListener<IConfig>() {
             @Override
-            public void onWriteBatchStart(IConfig  batchHolder) {
+            public void onWriteBatchStart(IConfig batchHolder) {
                 progressDialog = ProgressDialog.show(BeaconManagementActivity.this,
                         "Applying Config",
                         "Please wait...");
             }
 
             @Override
-            public void onWriteBatchFinish(final IConfig  batch) {
+            public void onWriteBatchFinish(final IConfig batch) {
                 progressDialog.dismiss();
                 final Intent serviceIntent = new Intent(BeaconManagementActivity.this, SyncService.class);
                 serviceIntent.putExtra(SyncService.EXTRA_REQUEST_CODE, SyncService.REQUEST_SYNC_CONFIG);
@@ -617,12 +617,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
 
             @Override
             public void onWriteFailure() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utils.showToast(BeaconManagementActivity.this, "Preset writing failed");
-                    }
-                });
+                showToast("Preset writing failed");
             }
         });
     }
@@ -631,12 +626,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.restoreDefaultSettings(masterPassword, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Device restored to default settings");
-                    }
-                });
+                showToast("Device restored to default settings");
             }
 
             @Override
@@ -664,13 +654,8 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.resetDevice(new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Device reset successfully");
-                        beaconConnection.connect();
-                    }
-                });
+                showToast("Device reset successfully");
+                beaconConnection.connect();
             }
 
             @Override
@@ -694,26 +679,16 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwriteModelName(result, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Model name written successfully");
-                    }
-                });
+                showToast("Model name written successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (cause == Cause.GATT_FAILURE) {
-                            showToast("Model name overwrite failure");
-                        } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
-                            showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
-                        }
-                    }
-                });
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Model name overwrite failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
+                }
             }
 
         });
@@ -723,26 +698,16 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwritePassword(result, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Password written successfully");
-                    }
-                });
+                showToast("Password written successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (cause == Cause.GATT_FAILURE) {
-                            showToast("Advertising Interval write failure");
-                        } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
-                            showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
-                        }
-                    }
-                });
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Advertising Interval write failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
@@ -751,26 +716,16 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwriteAdvertisingInterval(value, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Advertising Interval written successfully");
-                    }
-                });
+                showToast("Advertising Interval written successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (cause == Cause.GATT_FAILURE) {
-                            showToast("Advertising Interval overwrite failure");
-                        } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
-                            showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
-                        }
-                    }
-                });
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Advertising Interval overwrite failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
@@ -779,26 +734,16 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwritePowerLevel(newPowerLevel, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Power level written successfully");
-                    }
-                });
+                showToast("Power level written successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (cause == Cause.GATT_FAILURE) {
-                            showToast("Power level overwrite failure");
-                        } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
-                            showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
-                        }
-                    }
-                });
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Power level overwrite failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
@@ -807,26 +752,16 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwriteMinor(newMinor, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utils.showToast(BeaconManagementActivity.this, "Minor overwritten successfully");
-                    }
-                });
+                showToast("Minor overwritten successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(cause == Cause.GATT_FAILURE) {
-                            showToast("Minor overwrite failure");
-                        }  else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
-                            showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
-                        }
-                    }
-                });
+                if (cause == Cause.GATT_FAILURE) {
+                    showToast("Minor overwrite failure");
+                } else if (cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
+                }
             }
         });
     }
@@ -835,22 +770,12 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwriteMajor(newMajor, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Major overwritten successfully");
-                    }
-                });
+                showToast("Major overwritten successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Minor overwrite failure");
-                    }
-                });
+                showToast("Minor overwrite failure");
             }
         });
     }
@@ -869,7 +794,11 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
 
             @Override
             public void onWriteFailure(final Cause cause) {
-
+                if(cause == Cause.FEATURE_NOT_SUPPORTED) {
+                    showToast(getString(R.string.format_feature_not_supported_in_firmware, beaconConnection.getDevice().getFirmwareVersion()));
+                } else if(cause == Cause.GATT_FAILURE) {
+                    showToast("Device Profile switch failure");
+                }
             }
         });
     }
@@ -890,22 +819,12 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beaconConnection.overwriteProximity(uuid, new WriteListener() {
             @Override
             public void onWriteSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Proximity UUID overwritten successfully");
-                    }
-                });
+                showToast("Proximity UUID overwritten successfully");
             }
 
             @Override
             public void onWriteFailure(final Cause cause) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast("Minor overwrite failure");
-                    }
-                });
+                showToast("Minor overwrite failure");
             }
         });
     }
