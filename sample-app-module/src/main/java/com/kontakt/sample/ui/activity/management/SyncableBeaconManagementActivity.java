@@ -23,7 +23,7 @@ import com.kontakt.sdk.android.ble.connection.IBeaconConnection;
 import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
-import com.kontakt.sdk.android.common.model.BeaconConfig;
+import com.kontakt.sdk.android.common.model.Config;
 import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
@@ -256,7 +256,7 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
 
     private void onConfigResultDelivered(final int resultCode, final Intent data) {
         if (resultCode != RESULT_CANCELED) {
-            final BeaconConfig config = data.getParcelableExtra(ConfigFormActivity.EXTRA_RESULT_CONFIG);
+            final Config config = data.getParcelableExtra(ConfigFormActivity.EXTRA_RESULT_CONFIG);
             onApplyConfig(config);
         }
     }
@@ -505,10 +505,10 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
         startActivityForResult(new Intent(this, ConfigFormActivity.class), REQUEST_CODE_OBTAIN_CONFIG);
     }
 
-    private void onApplyConfig(final BeaconConfig config) {
-        syncableIBeaconConnection.applyConfig(config, new SyncableIBeaconConnection.SyncWriteBatchListener<BeaconConfig>() {
+    private void onApplyConfig(final Config config) {
+        syncableIBeaconConnection.applyConfig(config, new SyncableIBeaconConnection.SyncWriteBatchListener<Config>() {
             @Override
-            public void onSyncWriteBatchStart(BeaconConfig batchHolder) {
+            public void onSyncWriteBatchStart(Config batchHolder) {
                 showToast("write config batch start");
             }
 
@@ -529,7 +529,7 @@ public class SyncableBeaconManagementActivity extends BaseActivity implements IB
             }
 
             @Override
-            public void onSuccess(BeaconConfig batchHolder) {
+            public void onSuccess(Config batchHolder) {
                 showToast("config write and sync succeed");
             }
         });
