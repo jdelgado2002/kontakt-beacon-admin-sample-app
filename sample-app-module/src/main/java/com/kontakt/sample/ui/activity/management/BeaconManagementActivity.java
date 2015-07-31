@@ -24,6 +24,7 @@ import com.kontakt.sample.ui.view.Entry;
 import com.kontakt.sample.util.Constants;
 import com.kontakt.sample.util.Utils;
 import com.kontakt.sdk.android.ble.connection.IBeaconConnection;
+import com.kontakt.sdk.android.ble.connection.WriteBatchListener;
 import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
@@ -525,7 +526,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
     }
 
     private void onApplyConfig(final IConfig config) {
-        beaconConnection.applyConfig(config, new IBeaconConnection.WriteBatchListener<IConfig>() {
+        beaconConnection.applyConfig(config, new WriteBatchListener<IConfig>() {
             @Override
             public void onWriteBatchStart(IConfig batchHolder) {
                 progressDialog = ProgressDialog.show(BeaconManagementActivity.this,
@@ -580,7 +581,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
     }
 
     private void onAcceptProfile(final IPreset profile) {
-        beaconConnection.acceptProfile(profile, new IBeaconConnection.WriteBatchListener<IPreset>() {
+        beaconConnection.acceptProfile(profile, new WriteBatchListener<IPreset>() {
             @Override
             public void onWriteBatchStart(IPreset batchHolder) {
                 progressDialog = ProgressDialog.show(BeaconManagementActivity.this,
