@@ -84,6 +84,14 @@
                 android:alpha="0.7"
                 android:text="@string/syncable_connection" />
 
+            <Button
+                android:id="@+id/api_client_exp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:alpha="0.7"
+                android:text="@string/api_exp" />
+
 
         </LinearLayout>
     </ScrollView>

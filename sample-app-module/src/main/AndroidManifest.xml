@@ -38,7 +38,8 @@
         <activity android:name=".ui.activity.range.EddystoneBeaconRangeActivity" />
         <activity android:name=".ui.activity.management.EddystoneManagementActivity" />
         <activity android:name=".ui.activity.monitor.EddystoneMonitorActivity" />
-        <activity android:name=".ui.activity.monitor.AllBeaconsMonitorActivity"/>
+        <activity android:name=".ui.activity.monitor.AllBeaconsMonitorActivity" />
+        <activity android:name=".ui.activity.ApiExpActivity" />
 
         <service
             android:name=".service.BackgroundScanService"

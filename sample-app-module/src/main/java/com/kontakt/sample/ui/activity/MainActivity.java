@@ -97,4 +97,10 @@ public class MainActivity extends BaseActivity {
     void startRangingAllBeacons() {
         startActivity(new Intent(MainActivity.this, AllBeaconsMonitorActivity.class));
     }
+
+    @OnClick(R.id.api_client_exp)
+    void startApiExp() {
+        startActivity(new Intent(MainActivity.this, ApiExpActivity.class));
+    }
+
 }
