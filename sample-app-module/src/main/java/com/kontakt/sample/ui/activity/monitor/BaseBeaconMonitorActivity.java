@@ -97,7 +97,7 @@ public abstract class BaseBeaconMonitorActivity extends BaseActivity implements 
         return new ScanContext.Builder()
                 .setScanPeriod(new ScanPeriod(TimeUnit.SECONDS.toMillis(5), TimeUnit.SECONDS.toMillis(5)))
                 .setScanMode(ProximityManager.SCAN_MODE_BALANCED)
-                .setActivityCheckConfiguration(ActivityCheckConfiguration.DEFAULT)
+                .setActivityCheckConfiguration(ActivityCheckConfiguration.MINIMAL)
                 .setIBeaconScanContext(getIBeaconScanContext())
                 .setEddystoneScanContext(getEddystoneScanContext())
                 .build();

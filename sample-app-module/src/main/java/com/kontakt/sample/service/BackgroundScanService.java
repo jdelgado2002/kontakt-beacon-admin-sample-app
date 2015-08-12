@@ -63,7 +63,7 @@ public class BackgroundScanService extends Service implements ProximityManager.P
 
     private final ScanContext scanContext = new ScanContext.Builder()
             .setScanMode(ProximityManager.SCAN_MODE_BALANCED)
-            .setActivityCheckConfiguration(ActivityCheckConfiguration.DEFAULT)
+            .setActivityCheckConfiguration(ActivityCheckConfiguration.MINIMAL)
             .setForceScanConfiguration(ForceScanConfiguration.DEFAULT)
             .setIBeaconScanContext(new IBeaconScanContext.Builder()
                     .setEventTypes(EnumSet.of(
