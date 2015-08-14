@@ -124,7 +124,7 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
                     .setIBeaconScanContext(beaconScanContext)
                     .setEddystoneScanContext(eddystoneScanContext)
                     .setActivityCheckConfiguration(ActivityCheckConfiguration.MINIMAL)
-                    .setForceScanConfiguration(ForceScanConfiguration.DEFAULT)
+                    .setForceScanConfiguration(ForceScanConfiguration.MINIMAL)
                     .build();
         }
 

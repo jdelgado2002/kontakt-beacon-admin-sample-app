@@ -167,7 +167,7 @@ public abstract class BaseBeaconRangeActivity extends BaseActivity implements Pr
                     .setIBeaconScanContext(getIBeaconScanContext())
                     .setEddystoneScanContext(getEddystoneScanContext())
                     .setActivityCheckConfiguration(ActivityCheckConfiguration.MINIMAL)
-                    .setForceScanConfiguration(ForceScanConfiguration.DEFAULT)
+                    .setForceScanConfiguration(ForceScanConfiguration.MINIMAL)
                     .build();
         }
 
