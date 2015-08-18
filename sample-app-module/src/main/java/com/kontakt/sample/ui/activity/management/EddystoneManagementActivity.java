@@ -20,19 +20,20 @@ import com.kontakt.sample.ui.activity.BaseActivity;
 import com.kontakt.sample.ui.view.Entry;
 import com.kontakt.sample.util.Constants;
 import com.kontakt.sample.util.Utils;
-import com.kontakt.sdk.android.ble.connection.EddystoneConnection;
+import com.kontakt.sdk.android.ble.connection.KontaktDeviceConnection;
 import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
 import com.kontakt.sdk.android.common.interfaces.SDKPredicate;
 import com.kontakt.sdk.android.common.profile.DeviceProfile;
 import com.kontakt.sdk.android.common.profile.IEddystoneDevice;
+import com.kontakt.sdk.android.common.profile.RemoteBluetoothDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class EddystoneManagementActivity extends BaseActivity implements EddystoneConnection.ConnectionListener {
+public class EddystoneManagementActivity extends BaseActivity implements KontaktDeviceConnection.ConnectionListener {
 
     public static final String EXTRA_FAILURE_MESSAGE = "extra_failure_message";
 
@@ -64,7 +65,7 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
     @InjectView(R.id.switch_profile)
     Entry switchProfile;
 
-    private EddystoneConnection eddystoneConnection;
+    private KontaktDeviceConnection eddystoneConnection;
 
     private int animationDuration;
 
@@ -105,7 +106,7 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
 
     private void getEddystone() {
         IEddystoneDevice eddystoneDevice = getIntent().getParcelableExtra(EDDYSTONE_DEVICE);
-        eddystoneConnection = new EddystoneConnection(this, eddystoneDevice, this);
+        eddystoneConnection = new KontaktDeviceConnection(this, eddystoneDevice, this);
         setUpActionBarTitle(String.format("%s (%s)", eddystoneDevice.getUrl(), eddystoneDevice.getAddress()));
     }
 
@@ -410,7 +411,7 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
 
 
     @Override
-    public void onAuthenticationSuccess(IEddystoneDevice.Characteristics characteristics) {
+    public void onAuthenticationSuccess(RemoteBluetoothDevice.Characteristics characteristics) {
         showToast("Authentication success");
         setBeaconFormVisible(true);
         fillEntries(characteristics);
@@ -423,10 +424,10 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
             public void run() {
                 final Intent intent = getIntent();
                 switch (failureCode) {
-                    case EddystoneConnection.FAILURE_UNKNOWN_BEACON:
+                    case KontaktDeviceConnection.FAILURE_UNKNOWN_BEACON:
                         intent.putExtra(EXTRA_FAILURE_MESSAGE, String.format("Unknown beacon: %s", eddystoneConnection.getDevice().getAddress()));
                         break;
-                    case EddystoneConnection.FAILURE_WRONG_PASSWORD:
+                    case KontaktDeviceConnection.FAILURE_WRONG_PASSWORD:
                         intent.putExtra(EXTRA_FAILURE_MESSAGE, "Wrong password. Beacon will be disabled for about 20 mins.");
                         break;
                     default:
@@ -440,22 +441,22 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
 
 
     @Override
-    public void onCharacteristicsUpdated(IEddystoneDevice.Characteristics characteristics) {
+    public void onCharacteristicsUpdated(RemoteBluetoothDevice.Characteristics characteristics) {
         fillEntries(characteristics);
     }
 
     @Override
     public void onErrorOccured(int errorCode) {
         switch (errorCode) {
-            case EddystoneConnection.ERROR_OVERWRITE_REQUEST:
+            case KontaktDeviceConnection.ERROR_OVERWRITE_REQUEST:
                 showToast("Overwrite request error");
                 break;
 
-            case EddystoneConnection.ERROR_SERVICES_DISCOVERY:
+            case KontaktDeviceConnection.ERROR_SERVICES_DISCOVERY:
                 showToast("Services discovery error");
                 break;
 
-            case EddystoneConnection.ERROR_AUTHENTICATION:
+            case KontaktDeviceConnection.ERROR_AUTHENTICATION:
                 showToast("Authentication error");
                 break;
 
@@ -479,7 +480,7 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
         });
     }
 
-    private void fillEntries(final IEddystoneDevice.Characteristics characteristics) {
+    private void fillEntries(final RemoteBluetoothDevice.Characteristics characteristics) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -488,7 +489,7 @@ public class EddystoneManagementActivity extends BaseActivity implements Eddysto
         });
     }
 
-    private void fill(IEddystoneDevice.Characteristics characteristics) {
+    private void fill(RemoteBluetoothDevice.Characteristics characteristics) {
         namespaceId.setValue(characteristics.getNamespaceId());
         instanceId.setValue(characteristics.getInstanceId());
         url.setValue(characteristics.getUrl());

@@ -23,7 +23,7 @@ import com.kontakt.sample.ui.activity.ProfilesActivity;
 import com.kontakt.sample.ui.view.Entry;
 import com.kontakt.sample.util.Constants;
 import com.kontakt.sample.util.Utils;
-import com.kontakt.sdk.android.ble.connection.IBeaconConnection;
+import com.kontakt.sdk.android.ble.connection.KontaktDeviceConnection;
 import com.kontakt.sdk.android.ble.connection.WriteBatchListener;
 import com.kontakt.sdk.android.ble.connection.WriteListener;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
@@ -34,6 +34,7 @@ import com.kontakt.sdk.android.common.model.IPreset;
 import com.kontakt.sdk.android.common.model.Preset;
 import com.kontakt.sdk.android.common.profile.DeviceProfile;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
+import com.kontakt.sdk.android.common.profile.RemoteBluetoothDevice;
 import com.kontakt.sdk.android.common.util.IBeaconPropertyValidator;
 
 import java.util.UUID;
@@ -42,7 +43,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class BeaconManagementActivity extends BaseActivity implements IBeaconConnection.ConnectionListener {
+public class BeaconManagementActivity extends BaseActivity implements KontaktDeviceConnection.ConnectionListener {
 
     public static final String EXTRA_BEACON_DEVICE = "extra_beacon_device";
 
@@ -54,7 +55,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
 
     private IBeaconDevice beacon;
 
-    private IBeaconConnection beaconConnection;
+    private KontaktDeviceConnection beaconConnection;
 
     @InjectView(R.id.beacon_form)
     ViewGroup beaconForm;
@@ -121,7 +122,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         beacon = getIntent().getParcelableExtra(EXTRA_BEACON_DEVICE);
         setUpActionBarTitle(String.format("%s (%s)", beacon.getName(), beacon.getAddress()));
 
-        beaconConnection = new IBeaconConnection(this, beacon, this);
+        beaconConnection = new KontaktDeviceConnection(this, beacon, this);
     }
 
     @Override
@@ -182,7 +183,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
     }
 
     @Override
-    public void onAuthenticationSuccess(final IBeaconDevice.Characteristics characteristics) {
+    public void onAuthenticationSuccess(final RemoteBluetoothDevice.Characteristics characteristics) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -200,10 +201,10 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
             public void run() {
                 final Intent intent = getIntent();
                 switch (failureCode) {
-                    case IBeaconConnection.FAILURE_UNKNOWN_BEACON:
+                    case KontaktDeviceConnection.FAILURE_UNKNOWN_BEACON:
                         intent.putExtra(EXTRA_FAILURE_MESSAGE, String.format("Unknown beacon: %s", beacon.getName()));
                         break;
-                    case IBeaconConnection.FAILURE_WRONG_PASSWORD:
+                    case KontaktDeviceConnection.FAILURE_WRONG_PASSWORD:
                         intent.putExtra(EXTRA_FAILURE_MESSAGE, String.format("Wrong password. Beacon will be disabled for about 20 mins."));
                         break;
                     default:
@@ -216,7 +217,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
     }
 
     @Override
-    public void onCharacteristicsUpdated(final IBeaconDevice.Characteristics characteristics) {
+    public void onCharacteristicsUpdated(final RemoteBluetoothDevice.Characteristics characteristics) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -232,15 +233,15 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
             public void run() {
                 switch(errorCode) {
 
-                    case IBeaconConnection.ERROR_OVERWRITE_REQUEST:
+                    case KontaktDeviceConnection.ERROR_OVERWRITE_REQUEST:
                         Utils.showToast(BeaconManagementActivity.this, "Overwrite request error");
                         break;
 
-                    case IBeaconConnection.ERROR_SERVICES_DISCOVERY:
+                    case KontaktDeviceConnection.ERROR_SERVICES_DISCOVERY:
                         Utils.showToast(BeaconManagementActivity.this, "Services discovery error");
                         break;
 
-                    case IBeaconConnection.ERROR_AUTHENTICATION:
+                    case KontaktDeviceConnection.ERROR_AUTHENTICATION:
                         Utils.showToast(BeaconManagementActivity.this, "Authentication error");
                         break;
 
@@ -276,7 +277,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
         }
     }
 
-    private void fillEntries(IBeaconDevice.Characteristics characteristics) {
+    private void fillEntries(RemoteBluetoothDevice.Characteristics characteristics) {
         proximityUuidEntry.setValue(characteristics.getProximityUUID().toString());
         majorEntry.setValue(String.valueOf(characteristics.getMajor()));
         minorEntry.setValue(String.valueOf(characteristics.getMinor()));
@@ -548,23 +549,23 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
                 progressDialog.dismiss();
 
                 switch (errorCode) {
-                    case IBeaconConnection.ERROR_BATCH_WRITE_TX_POWER:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_TX_POWER:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Tx Power");
                         break;
-                    case IBeaconConnection.ERROR_BATCH_WRITE_INTERVAL:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_INTERVAL:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Interval");
                         break;
-                    case IBeaconConnection.ERROR_BATCH_WRITE_MAJOR:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_MAJOR:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Major value");
                         break;
-                    case IBeaconConnection.ERROR_BATCH_WRITE_MINOR:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_MINOR:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Minor value");
                         break;
-                    case IBeaconConnection.ERROR_BATCH_WRITE_PROXIMITY_UUID:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_PROXIMITY_UUID:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Proximity UUID");
                         break;
@@ -599,15 +600,15 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
                 progressDialog.dismiss();
 
                 switch (errorCode) {
-                    case IBeaconConnection.ERROR_BATCH_WRITE_TX_POWER:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_TX_POWER:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Tx Power");
                         break;
-                    case IBeaconConnection.ERROR_BATCH_WRITE_INTERVAL:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_INTERVAL:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Interval");
                         break;
-                    case IBeaconConnection.ERROR_BATCH_WRITE_PROXIMITY_UUID:
+                    case KontaktDeviceConnection.ERROR_BATCH_WRITE_PROXIMITY_UUID:
                         Utils.showToast(BeaconManagementActivity.this,
                                 "Error during Batch write operation - could not write Proximity UUID");
                         break;
@@ -817,7 +818,7 @@ public class BeaconManagementActivity extends BaseActivity implements IBeaconCon
     }
 
     private void onOverwriteProximityUUID(UUID uuid) {
-        beaconConnection.overwriteProximity(uuid, new WriteListener() {
+        beaconConnection.overwriteProximityUUID(uuid, new WriteListener() {
             @Override
             public void onWriteSuccess() {
                 showToast("Proximity UUID overwritten successfully");
