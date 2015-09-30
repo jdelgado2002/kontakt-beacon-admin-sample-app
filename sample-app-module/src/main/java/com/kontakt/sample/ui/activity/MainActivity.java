@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.kontakt.sample.R;
 import com.kontakt.sample.ui.activity.monitor.AllBeaconsMonitorActivity;
 import com.kontakt.sample.ui.activity.monitor.EddystoneMonitorActivity;
@@ -18,9 +21,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int REQUEST_CODE_ENABLE_BLUETOOTH = 121;
+    /* Client used to interact with Google APIs. */
+    private GoogleApiClient mGoogleApiClient;
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
@@ -33,6 +38,12 @@ public class MainActivity extends BaseActivity {
 
         setUpActionBar(toolbar);
         setUpActionBarTitle(getString(R.string.app_name));
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -96,5 +107,20 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.range_all_beacons)
     void startRangingAllBeacons() {
         startActivity(new Intent(MainActivity.this, AllBeaconsMonitorActivity.class));
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

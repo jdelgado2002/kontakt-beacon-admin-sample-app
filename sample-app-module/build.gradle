@@ -32,7 +32,9 @@ android {
 //            keyPassword RELEASE_KEY_PASSWORD
 //        }
 //    }
-
+    dependencies {
+        compile 'com.google.android.gms:play-services-location:8.1.0'
+    }
 
     //Uncomment the Signing configuration once you have all necessary keys generated
     //For more information navigate to http://developer.android.com/tools/publishing/app-signing.html
