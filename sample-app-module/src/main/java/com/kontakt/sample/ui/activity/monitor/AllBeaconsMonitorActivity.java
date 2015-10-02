@@ -81,6 +81,11 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
 
         deviceManager = new ProximityManager(this);
         list.setAdapter(allBeaconsRangeAdapter);
+
+        //show the last known location being passed from the mainActivity.
+        Bundle bundle = getIntent().getExtras();
+        String lastKnownLocation = bundle.getString("LastKnownLocation");
+        Utils.showToast(this, lastKnownLocation);
     }
 
     @Override

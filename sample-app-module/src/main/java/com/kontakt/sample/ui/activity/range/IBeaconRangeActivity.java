@@ -9,6 +9,7 @@ import com.kontakt.sample.adapter.range.BaseRangeAdapter;
 import com.kontakt.sample.adapter.range.IBeaconRangeAdapter;
 import com.kontakt.sample.dialog.PasswordDialogFragment;
 import com.kontakt.sample.ui.activity.management.BeaconManagementActivity;
+import com.kontakt.sample.util.Utils;
 import com.kontakt.sdk.android.ble.configuration.scan.EddystoneScanContext;
 import com.kontakt.sdk.android.ble.configuration.scan.IBeaconScanContext;
 import com.kontakt.sdk.android.common.interfaces.SDKBiConsumer;
@@ -19,6 +20,11 @@ public class IBeaconRangeActivity extends BaseBeaconRangeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //show the last known location being passed from the mainActivity.
+        Bundle bundle = getIntent().getExtras();
+        String lastKnownLocation = bundle.getString("LastKnownLocation");
+        Utils.showToast(this, lastKnownLocation);
     }
 
     @Override
