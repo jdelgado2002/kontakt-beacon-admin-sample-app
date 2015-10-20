@@ -25,8 +25,8 @@ public class AllBeaconsMonitorAdapter extends BaseExpandableListAdapter {
 
     private Context context;
 
-    private List<DeviceProfile> groupList;
-    private Map<DeviceProfile, List<AllBeaconWrapper>> childMap;
+    public List<DeviceProfile> groupList;
+    public Map<DeviceProfile, List<AllBeaconWrapper>> childMap;
 
     public AllBeaconsMonitorAdapter(Context context) {
         this.context = context;
