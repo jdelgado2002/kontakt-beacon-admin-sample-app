@@ -10,6 +10,7 @@ import android.widget.ExpandableListView;
 
 import com.kontakt.sample.R;
 import com.kontakt.sample.adapter.monitor.AllBeaconsMonitorAdapter;
+import com.kontakt.sample.model.AllBeaconWrapper;
 import com.kontakt.sample.ui.activity.BaseActivity;
 import com.kontakt.sample.util.Utils;
 import com.kontakt.sdk.android.ble.broadcast.BluetoothStateChangeReceiver;
@@ -86,6 +87,9 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
         Bundle bundle = getIntent().getExtras();
         String lastKnownLocation = bundle.getString("LastKnownLocation");
         Utils.showToast(this, lastKnownLocation);
+        for (AllBeaconWrapper item : allBeaconsRangeAdapter.childMap.get(DeviceProfile.IBEACON)) {
+            Utils.showToast(this, item.getBeaconDevice().getName());
+        }
     }
 
     @Override
@@ -243,6 +247,7 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
         DeviceProfile deviceProfile = event.getDeviceProfile();
         switch (deviceProfile) {
             case IBEACON:
+                //when this happens, save the beacon to a list available from the main class, set a button to save all the info from the current screen
                 onIBeaconDevicesList((IBeaconDeviceEvent) event);
                 break;
             case EDDYSTONE:
