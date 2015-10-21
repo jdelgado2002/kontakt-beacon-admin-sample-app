@@ -29,7 +29,7 @@ import butterknife.OnClick;
 public class MainActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int REQUEST_CODE_ENABLE_BLUETOOTH = 121;
-    private static final String API_ENDPOINT = "http://sheetsu.com/apis/7682b5db";
+    private static final String API_ENDPOINT = "https://sheetsu.com/apis/7682b5db";
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;

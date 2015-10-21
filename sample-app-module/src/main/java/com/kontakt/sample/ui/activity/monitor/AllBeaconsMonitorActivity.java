@@ -8,6 +8,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.kontakt.sample.R;
 import com.kontakt.sample.adapter.monitor.AllBeaconsMonitorAdapter;
 import com.kontakt.sample.model.AllBeaconWrapper;
@@ -29,15 +35,20 @@ import com.kontakt.sdk.android.ble.discovery.ibeacon.IBeaconDeviceEvent;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 import com.kontakt.sdk.android.ble.rssi.RssiCalculators;
 import com.kontakt.sdk.android.ble.util.BluetoothUtils;
+import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class AllBeaconsMonitorActivity extends BaseActivity implements ProximityManager.ProximityListener, OnBluetoothStateChangeListener {
 
+    private static final String API_ENDPOINT = "https://sheetsu.com/apis/7682b5db";
+    private static String lastKnownLocation = "";
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -85,7 +96,7 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
 
         //show the last known location being passed from the mainActivity.
         Bundle bundle = getIntent().getExtras();
-        String lastKnownLocation = bundle.getString("LastKnownLocation");
+        lastKnownLocation = bundle.getString("LastKnownLocation");
         Utils.showToast(this, lastKnownLocation);
         for (AllBeaconWrapper item : allBeaconsRangeAdapter.childMap.get(DeviceProfile.IBEACON)) {
             Utils.showToast(this, item.getBeaconDevice().getName());
@@ -247,8 +258,12 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
         DeviceProfile deviceProfile = event.getDeviceProfile();
         switch (deviceProfile) {
             case IBEACON:
-                //when this happens, save the beacon to a list available from the main class, set a button to save all the info from the current screen
-                onIBeaconDevicesList((IBeaconDeviceEvent) event);
+                IBeaconDeviceEvent iBeaconDeviceEvent = (IBeaconDeviceEvent) event;
+                for (IBeaconDevice iBeacon : iBeaconDeviceEvent.getDeviceList()) {
+                    setBeaconInfoOnApi(iBeacon);
+                }
+
+            onIBeaconDevicesList(iBeaconDeviceEvent);
                 break;
             case EDDYSTONE:
                 onEddystoneDevicesList((EddystoneDeviceEvent) event);
@@ -274,4 +289,41 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
         });
     }
 
+    private void setBeaconInfoOnApi(final IBeaconDevice IBeacon){
+
+        StringRequest stringRequest = new StringRequest
+                (Request.Method.POST, API_ENDPOINT, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Utils.showToast(getApplicationContext(), "Response: " + response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Utils.showToast(getApplicationContext(), "Error: " + error.toString());
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("beaconUniqueId",IBeacon.getUniqueId());
+                params.put("proximityUUID",IBeacon.getProximityUUID().toString());
+                params.put("major", String.valueOf(IBeacon.getMajor()));
+                params.put("minor",String.valueOf(IBeacon.getMinor()));
+                params.put("txPower",String.valueOf(IBeacon.getTxPower()));
+                params.put("coordinates",String.valueOf(lastKnownLocation));
+
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        // Add the request to the queue
+        Volley.newRequestQueue(this).add(stringRequest);
+    }
 }
