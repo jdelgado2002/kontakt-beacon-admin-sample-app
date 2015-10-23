@@ -88,4 +88,5 @@
     <string name="telemetry_version">Telemetry version: %1$d</string>
     <string name="tx_power_level">Power: %1$d dBm</string>
     <string name="range_all_beacons">Range all types</string>
+    <string name="saveBeaconLocationButton">Save Beacon Location</string>
 </resources>

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -16,7 +17,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.kontakt.sample.R;
 import com.kontakt.sample.adapter.monitor.AllBeaconsMonitorAdapter;
-import com.kontakt.sample.model.AllBeaconWrapper;
 import com.kontakt.sample.ui.activity.BaseActivity;
 import com.kontakt.sample.util.Utils;
 import com.kontakt.sdk.android.ble.broadcast.BluetoothStateChangeReceiver;
@@ -44,11 +44,13 @@ import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class AllBeaconsMonitorActivity extends BaseActivity implements ProximityManager.ProximityListener, OnBluetoothStateChangeListener {
 
     private static final String API_ENDPOINT = "https://sheetsu.com/apis/7682b5db";
     private static String lastKnownLocation = "";
+    private static Map<String,IBeaconDevice> iBeacons = new HashMap<>();
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -98,9 +100,6 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
         Bundle bundle = getIntent().getExtras();
         lastKnownLocation = bundle.getString("LastKnownLocation");
         Utils.showToast(this, lastKnownLocation);
-        for (AllBeaconWrapper item : allBeaconsRangeAdapter.childMap.get(DeviceProfile.IBEACON)) {
-            Utils.showToast(this, item.getBeaconDevice().getName());
-        }
     }
 
     @Override
@@ -260,7 +259,8 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
             case IBEACON:
                 IBeaconDeviceEvent iBeaconDeviceEvent = (IBeaconDeviceEvent) event;
                 for (IBeaconDevice iBeacon : iBeaconDeviceEvent.getDeviceList()) {
-                    setBeaconInfoOnApi(iBeacon);
+                    //setBeaconInfoOnApi(iBeacon);
+                    iBeacons.put(iBeacon.getUniqueId().toString(), iBeacon);
                 }
 
             onIBeaconDevicesList(iBeaconDeviceEvent);
@@ -324,6 +324,16 @@ public class AllBeaconsMonitorActivity extends BaseActivity implements Proximity
             }
         };
         // Add the request to the queue
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(50000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+    @OnClick(R.id.savelocation)
+    public void setLocation(){
+        onPause();
+        for (IBeaconDevice Ibeacon : iBeacons.values()) {
+            setBeaconInfoOnApi(Ibeacon);
+        }
+        onResume();
     }
 }

@@ -11,10 +11,17 @@
         android:layout_height="?android:attr/actionBarSize"
         layout="@layout/toolbar"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/saveBeaconLocationButton"
+        android:id="@+id/savelocation" />
+
     <ExpandableListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ExpandableListView>
+
 
 </LinearLayout>
